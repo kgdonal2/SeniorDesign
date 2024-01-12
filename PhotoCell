@@ -1,15 +1,26 @@
+#include <pico/stdlib.h>
+#include <stdio.h>
+
+
+
+
 int sensorPin =28 ;
 int value = 0;
 int count = 0;
 int count_on = 0;
-int dusk_light = 170;
+int dusk_light = 470;
 int morning_light = 570;
+int LED_PIN = 15;
 
 
 void setup()
 {
 pinMode(sensorPin, INPUT);
  Serial.begin(9600);
+     gpio_init(LED_PIN);
+     gpio_set_dir(LED_PIN, GPIO_OUT);
+
+
 }
 void loop()
 {
@@ -18,24 +29,32 @@ void loop()
 Serial.println(value);
 
 
+
+
 if (value <= dusk_light) {
-  
+ 
   if (count > 5) {
      Serial.println("turn on light");
-     Serial.println("shut off solar panel");
-  } 
+     //pinMode(LED_PIN, HIGH);
+     gpio_put(LED_PIN, 1);
+     //Serial.println("shut off solar panel");
+  }
   count = count + 1;
 } else {
   count = count * 0;
 }
 
 
+
+
 if (value >= morning_light) {
-  
+ 
   if (count_on > 5) {
      Serial.println("turn off light");
-     Serial.println("shut on solar panel");
-  } 
+     //pinMode(LED_PIN, LOW);
+     gpio_put(LED_PIN, 0);
+    // Serial.println("shut on solar panel");
+  }
   count_on = count_on + 1;
 } else {
   count_on = count_on * 0;
