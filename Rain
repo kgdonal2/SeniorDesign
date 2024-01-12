@@ -1,25 +1,35 @@
-From gpiozero import Button
-int rainGauge = Button(--) ;
+#include <Button.h>
+
+int rainGaugePin = 22;
 int count = 0;
 double rain = 0;
-double BUCKET_SIZE = 0.2794;
+double BUCKET_SIZE_MM = 0.2794;
+int done = 0;
+
 void setup()
 {
-pinMode(rainGauge, INPUT);
- Serial.begin(9600);
+  pinMode(rainGaugePin, INPUT);
+  Serial.begin(9600);
 }
-double much_rain(int count) {
- 	return count * BUCKET_SIZE;
+
+double calculateRain(int count) {
+  return count * BUCKET_SIZE_MM;
 }
+
 void loop()
 {
- if (rainGauge == HIGH) {
- 	Count = count + 1;
-}
- delay(100);
-rain = much_rain(count);
-Serial.println(rain);
-
-
-delay(100);
+  if (done <= 80) {
+    if (digitalRead(rainGaugePin) == HIGH) {
+      count = count + 1;
+      delay(50); // Debounce delay
+    }
+  } else {
+    rain = calculateRain(count);
+    Serial.println(rain);
+    count = 0;
+    done = 0;
+    delay(230);
+  }
+  done = done + 1;
+  delay(10);
 }
