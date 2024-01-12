@@ -1,0 +1,25 @@
+From gpiozero import Button
+int rainGauge = Button(--) ;
+int count = 0;
+double rain = 0;
+double BUCKET_SIZE = 0.2794;
+void setup()
+{
+pinMode(rainGauge, INPUT);
+ Serial.begin(9600);
+}
+double much_rain(int count) {
+ 	return count * BUCKET_SIZE;
+}
+void loop()
+{
+ if (rainGauge == HIGH) {
+ 	Count = count + 1;
+}
+ delay(100);
+rain = much_rain(count);
+Serial.println(rain);
+
+
+delay(100);
+}
