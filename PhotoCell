@@ -1,0 +1,44 @@
+int sensorPin =28 ;
+int value = 0;
+int count = 0;
+int count_on = 0;
+int dusk_light = 170;
+int morning_light = 570;
+
+
+void setup()
+{
+pinMode(sensorPin, INPUT);
+ Serial.begin(9600);
+}
+void loop()
+{
+ value = analogRead(sensorPin);
+ delay(500);
+Serial.println(value);
+
+
+if (value <= dusk_light) {
+  
+  if (count > 5) {
+     Serial.println("turn on light");
+     Serial.println("shut off solar panel");
+  } 
+  count = count + 1;
+} else {
+  count = count * 0;
+}
+
+
+if (value >= morning_light) {
+  
+  if (count_on > 5) {
+     Serial.println("turn off light");
+     Serial.println("shut on solar panel");
+  } 
+  count_on = count_on + 1;
+} else {
+  count_on = count_on * 0;
+}
+delay(500);
+}
