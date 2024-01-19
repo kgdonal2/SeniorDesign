@@ -1,63 +1,66 @@
-#include <pico/stdlib.h>
-#include <stdio.h>
+import utime
+from machine import I2C, Pin, ADC
+from lcd_api import LcdApi
+from pico_i2c_lcd import I2cLcd
+
+
+I2C_ADDR     = 39
+I2C_NUM_ROWS = 2
+I2C_NUM_COLS = 16
+
+i2c = I2C(0, sda=machine.Pin(0), scl=machine.Pin(1), freq=400000)
+lcd = I2cLcd(i2c, I2C_ADDR, I2C_NUM_ROWS, I2C_NUM_COLS)
 
 
 
+#from machine import Pin, ADC
+from time import sleep
 
-int sensorPin =28 ;
-int value = 0;
-int count = 0;
-int count_on = 0;
-int dusk_light = 470;
-int morning_light = 570;
-int LED_PIN = 15;
+sensor_pin = 28
+value = 0
+count = 0
+count_on = 0
+dusk_light = 6000
+morning_light = 10000
+led_pin = 15
 
+sensor = ADC(Pin(sensor_pin))
+led = Pin(led_pin, Pin.OUT)
 
-void setup()
-{
-pinMode(sensorPin, INPUT);
- Serial.begin(9600);
-     gpio_init(LED_PIN);
-     gpio_set_dir(LED_PIN, GPIO_OUT);
+def setup():
+    global sensor, led
+    sensor = ADC(Pin(sensor_pin))
+    led = Pin(led_pin, Pin.OUT)
 
+def loop():
+    global value, count, count_on
 
-}
-void loop()
-{
- value = analogRead(sensorPin);
- delay(500);
-Serial.println(value);
+    value = sensor.read_u16()
+    sleep(0.5)
+    #lcd.putstr(value)
+    lcd.clear()
+    print(value)
 
+    if value <= dusk_light:
+        if count > 5:
+            lcd.putstr("turn on light")
+            led.value(1)
+        count += 1
+    else:
+        count = 0
 
+    if value >= morning_light:
+        if count_on > 5:
+            lcd.putstr("turn off light")
+            led.value(0)
+        count_on += 1
+    else:
+        count_on = 0
 
+    sleep(0.5)
 
-if (value <= dusk_light) {
- 
-  if (count > 5) {
-     Serial.println("turn on light");
-     //pinMode(LED_PIN, HIGH);
-     gpio_put(LED_PIN, 1);
-     //Serial.println("shut off solar panel");
-  }
-  count = count + 1;
-} else {
-  count = count * 0;
-}
+if __name__ == "__main__":
+    setup()
+    while True:
+        loop()
 
-
-
-
-if (value >= morning_light) {
- 
-  if (count_on > 5) {
-     Serial.println("turn off light");
-     //pinMode(LED_PIN, LOW);
-     gpio_put(LED_PIN, 0);
-    // Serial.println("shut on solar panel");
-  }
-  count_on = count_on + 1;
-} else {
-  count_on = count_on * 0;
-}
-delay(500);
-}
