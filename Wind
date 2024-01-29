@@ -1,0 +1,16 @@
+from machine import Pin,UART
+import time
+
+uart = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
+uart.init(bits=8, parity=None, stop=1)
+data = [0]*18
+
+
+while True:
+    uart.write('FF0300000002D1D5')
+    if uart.any(): 
+        data = uart.read()
+        
+        print(str(data))
+
+    time.sleep(.5)
