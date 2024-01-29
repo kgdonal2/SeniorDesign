@@ -20,8 +20,8 @@ sensor_pin = 28
 value = 0
 count = 0
 count_on = 0
-dusk_light = 6000
-morning_light = 10000
+dusk_light = 30000
+morning_light = 50000
 led_pin = 15
 
 sensor = ADC(Pin(sensor_pin))
