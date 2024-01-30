@@ -3,14 +3,39 @@ import time
 
 uart = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
 uart.init(bits=8, parity=None, stop=1)
-data = [0]*18
 
+def setup():
+    data = [0]*9
+    address = [0]*9
+    red = [0]*9
+    uart.write('0006000000FF49DB')
+    time.sleep(3)
+    
+    uart.write('00030000000185DB')
+    time.sleep(2)
+    red = uart.read()
+    print("new address" + str(red))
+    
+    uart.write('0006000000FF49DB')
+    time.sleep(2)
+    #uart.write('00030000000185DB')
+    address = uart.read()
+    print("maybe address" + str(address))
+    
+    time.sleep(3)
 
-while True:
+def loop():
     uart.write('FF0300000002D1D5')
     if uart.any(): 
         data = uart.read()
-        
+        time.sleep(.2)
+        print("data:")
         print(str(data))
 
     time.sleep(.5)
+    
+    
+if __name__ == "__main__":
+    setup()
+    while True:
+        loop()
