@@ -1,41 +1,51 @@
-from machine import Pin,UART
+from machine import Pin, UART
 import time
 
 uart = UART(1, baudrate=9600, tx=Pin(8), rx=Pin(9))
 uart.init(bits=8, parity=None, stop=1)
 
+
+# 0006000000FF49DB means modifies sensor address comand
+# 00030000000185DB reads sensor address command
+# FF0300000002D1D5 read data command
+
+
 def setup():
-    data = [0]*9
-    address = [0]*9
-    red = [0]*9
-    uart.write('0006000000FF49DB')
+    # Omitted unnecessary variable initialization
+    uart.write(b'00 03 00 00 00 01 2A BB')  # Use bytes by adding 'b' prefix
+    #uart.write(b'00030000000185DB')
     time.sleep(3)
+    olll = uart.read()
+    print("og address: " + olll.decode('utf-8'))
     
-    uart.write('00030000000185DB')
+    time.sleep(1)
+    uart.write(b'00 06 00 00 00 FF 2A BB')
+    #uart.write(b'0006000000FF49DB')
     time.sleep(2)
     red = uart.read()
-    print("new address" + str(red))
-    
-    uart.write('0006000000FF49DB')
+    print("New address: " + red.decode('utf-8'))
+
+    uart.write(b'00 03 00 00 00 01 2A BB')
+    #uart.write(b'00030000000185DB')
     time.sleep(2)
-    #uart.write('00030000000185DB')
     address = uart.read()
-    print("maybe address" + str(address))
-    
+    print("Maybe address: " + address.decode('utf-8'))
+
     time.sleep(3)
 
 def loop():
-    uart.write('FF0300000002D1D5')
-    if uart.any(): 
+    uart.write(b'FF03000000022ABB')
+    time.sleep(0.1)  # Shortened sleep interval
+    if uart.any():
         data = uart.read()
-        time.sleep(.2)
-        print("data:")
-        print(str(data))
+        time.sleep(0.2)
+        print("Data:", data.decode('utf-8'))
 
-    time.sleep(.5)
-    
-    
+    time.sleep(0.5)
+
 if __name__ == "__main__":
     setup()
     while True:
         loop()
+
+
