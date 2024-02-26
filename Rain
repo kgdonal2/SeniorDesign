@@ -1,35 +1,18 @@
-#include <Button.h>
+import machine
+from time import sleep
 
-int rainGaugePin = 22;
-int count = 0;
-double rain = 0;
-double BUCKET_SIZE_MM = 0.2794;
-int done = 0;
+BUCKET_SIZE_MM = 0.2794
+count = 0
 
-void setup()
-{
-  pinMode(rainGaugePin, INPUT);
-  Serial.begin(9600);
-}
+rain_butt = machine.Pin(0,machine.Pin.IN, machine.Pin.PULL_UP)
 
-double calculateRain(int count) {
-  return count * BUCKET_SIZE_MM;
-}
 
-void loop()
-{
-  if (done <= 80) {
-    if (digitalRead(rainGaugePin) == HIGH) {
-      count = count + 1;
-      delay(50); // Debounce delay
-    }
-  } else {
-    rain = calculateRain(count);
-    Serial.println(rain);
-    count = 0;
-    done = 0;
-    delay(230);
-  }
-  done = done + 1;
-  delay(10);
-}
+while True:
+    if rain_butt.value() == 0:
+        count = count + 1
+        
+    if count == 3:
+        #print('count : ' , count)
+        print('count : ' , count ,' which is ' , count*BUCKET_SIZE_MM , 'mm')
+    
+    sleep(0.1)
