@@ -1,0 +1,13 @@
+import machine
+from time import sleep
+
+
+rain_butt = machine.Pin(0,machine.Pin.IN, machine.Pin.PULL_UP)
+
+
+while True:
+    if rain_butt.value() == 0:
+        print('0 , button pressed!')
+    if rain_butt.value() == 1:
+        print ('1, button not pressed')
+    sleep(0.2)
