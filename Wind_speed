@@ -1,52 +1,48 @@
-
 from machine import Pin, ADC
 import time
 import math
 
-wind_speed_sensor  = machine.Pin(15,machine.Pin.IN, machine.Pin.PULL_UP)
-wind_count = 0
-count = 0
-old = 0
-radius_cm = 9.0
-wind_interval = 5
+# Constants
+RADIUS_CM = 9.0
+WIND_INTERVAL = 5
 CM_IN_KM = 100000.0
 SEC_IN_HOUR = 3600
 
+wind_speed_sensor = Pin(15, Pin.IN, Pin.PULL_UP)
+wind_count = 0
+count = 0
+old = 0
+av = []
 
 def spin():
     global wind_count
-    wind_count = wind_count + 1
+    wind_count += 1
     print("spin" + str(wind_count))
-    
 
 def calc_wind_speed(time_sec):
-    global wind_count
-    circumference_cm = (2 * math.pi) * radius_cm
+    circumference_cm = 2 * math.pi * RADIUS_CM
     rotations = wind_count / 2.0
-
-    #dist_cm = (circumference_cm * rotations )
-    dist_km = (circumference_cm * rotations ) / CM_IN_KM
-    
+    dist_km = (circumference_cm * rotations) / CM_IN_KM
     km_sec = dist_km / time_sec
     km_hour = km_sec * SEC_IN_HOUR
-    #speed = dist_cm / wind_interval
-
     return km_hour
 
-
-
 while True:
-    time.sleep(.1) 
-    count = count  + 1
-    if wind_speed_sensor.value() != old :
+    time.sleep(.01)
+    count += 1
+    if wind_speed_sensor.value() != old:
         if wind_speed_sensor.value() == 1:
             spin()
-            
         old = wind_speed_sensor.value()
-     
-   
-    if count == 50:
+
+    if count == 500:
         count = 0
-        print( calc_wind_speed(wind_interval), "km/h")
+        av.append(calc_wind_speed(WIND_INTERVAL))
+        print(calc_wind_speed(WIND_INTERVAL), "km/h")
         wind_count = 0
-    
+
+    if len(av) >= 10:
+        average = sum(av) / len(av)
+        print("average over 50 seconds:", average, "km/h")
+        av = []
+
