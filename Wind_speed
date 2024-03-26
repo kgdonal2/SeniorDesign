@@ -9,25 +9,29 @@ count = 0
 old = 0
 radius_cm = 9.0
 wind_interval = 5
+CM_IN_KM = 100000.0
+SEC_IN_HOUR = 3600
 
 
 def spin():
     global wind_count
     wind_count = wind_count + 1
-    #print("spin" + str(wind_count))
+    print("spin" + str(wind_count))
     
-    import math
 
 def calc_wind_speed(time_sec):
     global wind_count
     circumference_cm = (2 * math.pi) * radius_cm
     rotations = wind_count / 2.0
 
-    dist_cm = circumference_cm * rotations
+    #dist_cm = (circumference_cm * rotations )
+    dist_km = (circumference_cm * rotations ) / CM_IN_KM
     
-    speed = dist_cm / wind_interval
+    km_sec = dist_km / time_sec
+    km_hour = km_sec * SEC_IN_HOUR
+    #speed = dist_cm / wind_interval
 
-    return speed
+    return km_hour
 
 
 
@@ -37,11 +41,12 @@ while True:
     if wind_speed_sensor.value() != old :
         if wind_speed_sensor.value() == 1:
             spin()
+            
         old = wind_speed_sensor.value()
      
    
     if count == 50:
         count = 0
-        print( calc_wind_speed(wind_interval), "cm/h")
+        print( calc_wind_speed(wind_interval), "km/h")
         wind_count = 0
     
